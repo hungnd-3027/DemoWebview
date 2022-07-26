@@ -2,35 +2,36 @@ package com.example.demowebview
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 
-fun Fragment.addFragment(
+fun addFragment(
     @IdRes containerId: Int,
     fragment: Fragment,
     addToBackStack: Boolean = false,
-    tag: String? = fragment::class.java.simpleName
+    fragmentManager: FragmentManager
 ) {
-    activity?.supportFragmentManager?.apply {
+    fragmentManager.apply {
         beginTransaction().apply {
             if (addToBackStack) {
-                addToBackStack(tag)
+                addToBackStack(fragment::class.java.simpleName)
             }
-            add(containerId, fragment, tag)
+            add(containerId, fragment, fragment::class.java.simpleName)
         }.commit()
     }
 }
 
-fun Fragment.replaceFragment(
+fun replaceFragment(
     @IdRes containerId: Int,
     fragment: Fragment,
     addToBackStack: Boolean,
-    tag: String? = fragment::class.java.simpleName
+    fragmentManager: FragmentManager
 ) {
-    activity?.supportFragmentManager?.apply {
+    fragmentManager.apply {
         beginTransaction().apply {
             if (addToBackStack) {
-                addToBackStack(tag)
+                addToBackStack(fragment::class.java.simpleName)
             }
-            replace(containerId, fragment, tag)
+            replace(containerId, fragment, fragment::class.java.simpleName)
         }.commit()
     }
 }
