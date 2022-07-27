@@ -2,6 +2,7 @@ package com.example.demowebview.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.core.os.bundleOf
 import com.example.demowebview.BaseFragment
@@ -9,7 +10,8 @@ import com.example.demowebview.R
 import com.example.demowebview.addFragment
 import com.example.demowebview.databinding.FragmentLayerOneBinding
 
-class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneBinding::inflate), OnClickCallback {
+class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneBinding::inflate),
+    OnClickCallback {
     private var baseUrl = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,22 +31,19 @@ class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneB
         binding?.webViewLayerOne?.apply {
             loadUrl(baseUrl)
             settings.javaScriptEnabled = true
-            webViewClient = NewsWebViewClient(this@LayerOneFragment)
+            webViewClient = NewsWebViewClient(false, this@LayerOneFragment)
+            setOnKeyListener { view, keyCode, keyEvent ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && canGoBack()) {
+                    goBack()
+                } else {
+                    activity?.onBackPressed()
+                }
+                true
+            }
         }
     }
 
-    override fun tabsCallback(urlRequest: String) {
-        activity?.let {
-            addFragment(
-                R.id.frameLayoutNews,
-                LayerTwoFragment.newInstance(urlRequest),
-                true,
-                it.supportFragmentManager
-            )
-        }
-    }
-
-    override fun htmlCallback(urlRequest: String) {
+    override fun layerOneCallback(urlRequest: String) {
         activity?.let {
             addFragment(
                 R.id.frameLayoutNews,

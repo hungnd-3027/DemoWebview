@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import androidx.core.os.bundleOf
 import com.example.demowebview.BaseFragment
@@ -12,7 +12,9 @@ import com.example.demowebview.R
 import com.example.demowebview.addFragment
 import com.example.demowebview.databinding.FragmentLayerTwoBinding
 
-class LayerTwoFragment : BaseFragment<FragmentLayerTwoBinding>(FragmentLayerTwoBinding::inflate), OnClickCallback {
+class LayerTwoFragment : BaseFragment<FragmentLayerTwoBinding>(FragmentLayerTwoBinding::inflate),
+    OnClickCallback, View.OnClickListener {
+
     private var newsUrl = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,16 +27,19 @@ class LayerTwoFragment : BaseFragment<FragmentLayerTwoBinding>(FragmentLayerTwoB
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initWebViewData()
+        registerOnclick()
     }
 
-    override fun tabsCallback(urlRequest: String) {
-        activity?.let {
-            addFragment(
-                R.id.frameLayoutNews,
-                newInstance(urlRequest),
-                true,
-                it.supportFragmentManager
-            )
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.imageBack -> {
+                binding?.webViewLayerTwo?.apply {
+                    if (canGoBack()) goBack()
+                }
+            }
+            R.id.imageClose -> {
+                closeAllLayerTwo()
+            }
         }
     }
 
@@ -60,7 +65,31 @@ class LayerTwoFragment : BaseFragment<FragmentLayerTwoBinding>(FragmentLayerTwoB
         binding?.webViewLayerTwo?.apply {
             loadUrl(newsUrl)
             settings.javaScriptEnabled = true
-            webViewClient = NewsWebViewClient(this@LayerTwoFragment)
+            webViewClient = NewsWebViewClient(true, this@LayerTwoFragment)
+            setOnKeyListener { view, keyCode, keyEvent ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && canGoBack()) {
+                    goBack()
+                } else {
+                    activity?.onBackPressed()
+                }
+                true
+            }
+        }
+    }
+
+    private fun closeAllLayerTwo() {
+        val fragmentManager = activity?.supportFragmentManager
+        fragmentManager?.backStackEntryCount?.let {
+            for (i in 0 until (fragmentManager.backStackEntryCount)) {
+                fragmentManager.popBackStack()
+            }
+        }
+    }
+
+    private fun registerOnclick() {
+        binding?.apply {
+            imageBack.setOnClickListener(this@LayerTwoFragment)
+            imageClose.setOnClickListener(this@LayerTwoFragment)
         }
     }
 
