@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import com.example.demowebview.BaseFragment
+import com.example.demowebview.R
+import com.example.demowebview.addFragment
 import com.example.demowebview.databinding.FragmentLayerOneBinding
 
-class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneBinding::inflate) {
+class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneBinding::inflate), OnClickCallback {
     private var baseUrl = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,29 @@ class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneB
         binding?.webViewLayerOne?.apply {
             loadUrl(baseUrl)
             settings.javaScriptEnabled = true
+            webViewClient = NewsWebViewClient(this@LayerOneFragment)
+        }
+    }
+
+    override fun tabsCallback(urlRequest: String) {
+        activity?.let {
+            addFragment(
+                R.id.frameLayoutNews,
+                LayerTwoFragment.newInstance(urlRequest),
+                true,
+                it.supportFragmentManager
+            )
+        }
+    }
+
+    override fun htmlCallback(urlRequest: String) {
+        activity?.let {
+            addFragment(
+                R.id.frameLayoutNews,
+                LayerTwoFragment.newInstance(urlRequest),
+                true,
+                it.supportFragmentManager
+            )
         }
     }
 
