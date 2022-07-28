@@ -7,28 +7,38 @@ import com.example.demowebview.Constants
 import java.util.regex.Pattern
 
 class NewsWebViewClient(
+    private var isLayerTwo: Boolean = false,
     private var listener: OnClickCallback
 ) : WebViewClient() {
+
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         val urlRequest = request?.url.toString().replaceAfter("#", "").replace("#", "")
-        if (urlRequest == (Constants.BASE_URL + "/")) {
-            return false
+        if (isLayerTwo) {
+            return when {
+                urlRequest.endsWith(".html") -> {
+                    listener.htmlCallback(urlRequest)
+                    true
+                }
+                isContainPattern(urlRequest) -> {
+                    false
+                }
+                else -> {
+                    listener.browserCallback(urlRequest)
+                    true
+                }
+            }
         } else {
-            if (urlRequest.endsWith(".html")) {
-                listener.htmlCallback(urlRequest)
-                return true
-            } else if (isContainPattern(urlRequest)) {
-                listener.tabsCallback(urlRequest)
-                return true
+            return if (urlRequest == (Constants.BASE_URL + "/")) {
+                false
             } else {
-                listener.browserCallback(urlRequest)
-                return true
+                listener.layerOneCallback(urlRequest)
+                true
             }
         }
     }
 
     private fun isContainPattern(url: String): Boolean {
-        val regex = "\\b${Constants.BASE_URL}\\/\\w+\\-"
+        val regex = "\\b${Constants.BASE_URL}\\/\\w+"
         val pattern = Pattern.compile(regex)
         val matcher = pattern.matcher(url)
         return matcher.find()

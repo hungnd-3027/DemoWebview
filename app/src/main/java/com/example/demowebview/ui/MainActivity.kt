@@ -2,6 +2,7 @@ package com.example.demowebview.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.demowebview.Constants
 import com.example.demowebview.R
