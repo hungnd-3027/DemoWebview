@@ -26,6 +26,10 @@ class LayerOneFragment : BaseFragment<FragmentLayerOneBinding>(FragmentLayerOneB
         initWebViewData()
     }
 
+    fun abc() {
+
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebViewData() {
         binding?.webViewLayerOne?.apply {
